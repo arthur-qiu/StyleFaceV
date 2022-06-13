@@ -1,7 +1,5 @@
 # StyleFaceV - Official PyTorch Implementation
 
-<!-- <img src="./doc_images/overview.jpg" width="96%" height="96%"> -->
-
 This repository provides the official PyTorch implementation for the following paper:
 
 **StyleFaceV: Face Video Generation via Decomposing and Recomposing Pretrained StyleGAN3**</br>
@@ -10,7 +8,7 @@ Arxiv, 2022.
 
 From [MMLab@NTU](https://www.mmlab-ntu.com/index.html) affliated with S-Lab, Nanyang Technological University and SenseTime Research.
 
-<td><img src="imgs/docs.png" width="100%"/></td>
+<img src="docs/teaser.png" width="100%"/>
 
 [**[Project Page]**]() | [**[Paper]**]() | [**[Demo Video]**]()
 
