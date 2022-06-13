@@ -8,7 +8,7 @@ Arxiv, 2022.
 
 From [MMLab@NTU](https://www.mmlab-ntu.com/index.html) affliated with S-Lab, Nanyang Technological University and SenseTime Research.
 
-<img src="docs/teaser.png" width="100%"/>
+<img src="docs/teaser.png" width="90%" height="90%"/>
 
 [**[Project Page]**]() | [**[Paper]**]() | [**[Demo Video]**]()
 
@@ -28,3 +28,7 @@ cd StyleFaceV
 
 All dependencies for defining the environment are provided in `environment/stylefacev_env.yaml`.
 We recommend using [Anaconda](https://docs.anaconda.com/anaconda/install/) to manage the python environment:
+
+##Inference
+
+**Pretrained Model:**
