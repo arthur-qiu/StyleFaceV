@@ -33,11 +33,19 @@ We recommend using [Anaconda](https://docs.anaconda.com/anaconda/install/) to ma
 ```bash
 conda env create -f ./environment/stylefacev.yaml
 conda activate stylefacev
+```
 
 ## Sampling
 
-**Pretrained Model:**
+### Pretrained Models
 
+```bash
+```
+
+### Generating Videos
+
+```bash
+```
 
 ## Citation
 
