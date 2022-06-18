@@ -24,10 +24,15 @@ From [MMLab@NTU](https://www.mmlab-ntu.com/index.html) affliated with S-Lab, Nan
 git clone https://github.com/arthur-qiu/StyleFaceV.git
 cd StyleFaceV
 ```
+
 **Dependencies:**
 
-All dependencies for defining the environment are provided in `environment/stylefacev_env.yaml`.
+All dependencies for defining the environment are provided in `environment/text2human_env.yaml`.
 We recommend using [Anaconda](https://docs.anaconda.com/anaconda/install/) to manage the python environment:
+
+```bash
+conda env create -f ./environment/stylefacev.yaml
+conda activate stylefacev
 
 ## Sampling
 
