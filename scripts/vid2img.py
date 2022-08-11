@@ -3,7 +3,7 @@ import os
 import glob
 import numpy as np
 
-video_name = '/mnt/lustre/hnqiu/data/actor_align_512/Actor_*/*.mp4'
+video_name = '../data/actor_align_512/Actor_*/*.mp4'
 
 files = sorted(glob.glob(video_name))
 
