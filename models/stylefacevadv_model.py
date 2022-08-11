@@ -64,10 +64,10 @@ class StyleFaceVadvModel(BaseModel):
         parser.add_argument('--seq_frame', type=int, default=3, help='squence of frames')
         parser.add_argument('--max_gap', type=int, default=15, help='max gap')
         parser.add_argument('--pose_path', type=str, default='', help='path for pose net')
-        parser.add_argument('--num_point', type=int, default=12)
+        parser.add_argument('--num_point', type=int, default=14)
         parser.add_argument('--pre_path', type=str, default='', help='path for pretrain')
         if is_train:
-            parser.set_defaults(pool_size=0, gan_mode='vanilla')
+            parser.set_defaults(pool_size=0, gan_mode='vanilla', epoch_gan = 20)
             parser.add_argument('--lambda_L1', type=float, default=10.0, help='weight for L1 loss')
             parser.add_argument('--lambda_VGG', type=float, default=100.0, help='weight for VGG loss')
             parser.add_argument('--lambda_L2', type=float, default=10.0, help='weight for L2 loss')
@@ -142,7 +142,10 @@ class StyleFaceVadvModel(BaseModel):
                 self.vgg16 = torch.jit.load(f).eval().to(self.gpu_ids[0])
 
         self.m_zero = make_transform((0.0,0.0),(0.0))
+        self.use_gan_loss = False
 
+    def Use_GAN_Loss(self):
+        self.use_gan_loss = True
 
     def set_input(self, input):
         """Unpack input data from the dataloader and perform necessary pre-processing steps.
@@ -179,7 +182,6 @@ class StyleFaceVadvModel(BaseModel):
                 self.real_As_lm[:, [54], ...],
                 self.real_As_lm[:, [79], ...],
                 self.real_As_lm[:, [85], ...],
-                # torch.sum(self.real_As_lm[:, 76:96, ...], dim=1, keepdim=True) / 20,
                 self.real_As_lm[:, [88], ...],
                 self.real_As_lm[:, [92], ...],
                 torch.sum(self.real_As_lm[:, [90, 94], ...], dim=1, keepdim=True) / 2,
@@ -230,7 +232,6 @@ class StyleFaceVadvModel(BaseModel):
                 self.real_B_lm[:, [54], ...],
                 self.real_B_lm[:, [79], ...],
                 self.real_B_lm[:, [85], ...],
-                # torch.sum(self.real_B_lm[:, 76:96, ...], dim=1, keepdim=True) / 20,
                 self.real_B_lm[:, [88], ...],
                 self.real_B_lm[:, [92], ...],
                 torch.sum(self.real_B_lm[:, [90, 94], ...], dim=1, keepdim=True) / 2,
@@ -272,11 +273,14 @@ class StyleFaceVadvModel(BaseModel):
 
         self.loss_G_L2 = self.opt.lambda_L2 * self.criterionL2(self.fake_As_pose, self.real_As_key)
 
-        self.G_fake_As = self.netD(self.fake_As)
-        self.loss_G_GAN = self.opt.lambda_GAN * self.criterionGAN(self.G_fake_As, True)
-
-        # combine loss and calculate gradients
-        self.loss_G = self.loss_G_L1 + self.loss_G_VGG + self.loss_G_L2 + self.loss_G_GAN
+        if self.use_gan_loss:
+            self.G_fake_As = self.netD(self.fake_As)
+            self.loss_G_GAN = self.opt.lambda_GAN * self.criterionGAN(self.G_fake_As, True)
+            # combine loss and calculate gradients
+            self.loss_G = self.loss_G_L1 + self.loss_G_VGG + self.loss_G_L2 + self.loss_G_GAN
+        else:
+            # combine loss and calculate gradients
+            self.loss_G = self.loss_G_L1 + self.loss_G_VGG + self.loss_G_L2
         self.loss_G.backward()
 
     def backward_G_B(self):
@@ -286,21 +290,23 @@ class StyleFaceVadvModel(BaseModel):
 
         self.loss_G_L2_B = self.opt.lambda_L2 * self.criterionL2(self.fake_B_pose, self.real_B_key)
 
-        self.loss_G_APP_B = self.opt.lambda_APP * self.criterionL1(self.fake_B_app, self.real_B2_app.detach())
+        # self.loss_G_APP_B = self.opt.lambda_APP * self.criterionL1(self.fake_B_app, self.real_B2_app.detach())
 
         self.loss_G_W = self.opt.lambda_W * self.criterionL1(self.fake_B_w[:,1:,:], self.real_B_w.detach()[:,1:,:])
 
         # combine loss and calculate gradients
-        self.loss_G_B = self.opt.lambda_B * (self.loss_G_L1_B + self.loss_G_VGG_B + self.loss_G_L2_B + self.loss_G_W + self.loss_G_APP_B)
+        # self.loss_G_B = self.opt.lambda_B * (self.loss_G_L1_B + self.loss_G_VGG_B + self.loss_G_L2_B + self.loss_G_W + self.loss_G_APP_B)
+        self.loss_G_B = self.opt.lambda_B * (self.loss_G_L1_B + self.loss_G_VGG_B + self.loss_G_L2_B + self.loss_G_W)
         self.loss_G_B.backward()
 
     def optimize_parameters(self):
-        self.forward_D()                   # compute fake images: G(A)
-        # update G
-        self.set_requires_grad(self.netD, True)  # D requires no gradients when optimizing G
-        self.optimizer_D.zero_grad()     # set D's gradients to zero
-        self.backward_D()                # calculate gradients for D
-        self.optimizer_D.step()          # update D's weights
+        if self.use_gan_loss:
+            self.forward_D()                   # compute fake images: G(A)
+            # update G
+            self.set_requires_grad(self.netD, True)  # D requires no gradients when optimizing G
+            self.optimizer_D.zero_grad()     # set D's gradients to zero
+            self.backward_D()                # calculate gradients for D
+            self.optimizer_D.step()          # update D's weights
 
         self.forward()                   # compute fake images: G(A)
         # update G
