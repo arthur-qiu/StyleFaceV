@@ -51,7 +51,7 @@ Download the processed video data via this [Google Drive](https://drive.google.c
 
 Pretrained models can be downloaded from this [Google Drive](https://drive.google.com/file/d/1VyI8_AbPwAUaZJPaPba8zxsFIWumlDen/view?usp=sharing). Unzip the file and put them under the dataset folder with the following structure:
 ```
-pretrain_models
+pretrained_models
 ├── .pth
 ├── .pth
 ├── .pth
@@ -63,7 +63,7 @@ pretrain_models
 ### Generating Videos
 
 ```bash
-python test.py --dataroot ../data/actor_align_512_png --name stylefacev --n_frames_G 60 --epoch 35 --network_pkl=pretrain_models/network-snapshot-005000.pkl --model sample --pose_path checkpoints/ffhq_stylevpose5/latest_net_FE.pth --model_names FE,FE_pose,FE_lm --rnn_path checkpoints/ffhq_stylep5ddrnnnewalign30/100_net_G.pth --num_test=1024 --results_dir './sample_results/'
+python test.py --dataroot ../data/actor_align_512_png --name stylefacev --n_frames_G 60 --epoch 35 --network_pkl=pretrained_models/network-snapshot-005000.pkl --model sample --pose_path checkpoints/ffhq_stylevpose5/latest_net_FE.pth --model_names FE,FE_pose,FE_lm --rnn_path checkpoints/ffhq_stylep5ddrnnnewalign30/100_net_G.pth --num_test=1024 --results_dir './sample_results/'
 ```
 
 ## Training
@@ -71,13 +71,13 @@ python test.py --dataroot ../data/actor_align_512_png --name stylefacev --n_fram
 ### Stage 1
 
 ```bash
-python train.py --dataroot ../data/actor_align_512_png --name stylefacev_pre --network_pkl=pretrain_models/network-snapshot-005000.pkl --model stylepre --pose_path checkpoints/ffhq_stylevideopose/latest_net_FE.pth
+python train.py --dataroot ../data/actor_align_512_png --name stylefacev_pre --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylepre --pose_path checkpoints/ffhq_stylevideopose/latest_net_FE.pth
 ```
 
 ### Stage 2
 
 ```bash
-
+python stylevideo_train.py --dataroot ../data/actor_align_512_png --name stylefacev --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylefacevadv --pose_path checkpoints/ffhq_stylevpose5/latest_net_FE.pth --n_epochs 50 --n_epochs_decay 50 --continue_train --lr 0.0002 --lambda_L2 1 --lambda_GAN 0.01 --lambda_W 10 --lambda_B 0.1 --lambda_APP 0.01 --max_dataset_size 10000
 ```
 
 ## Citation
