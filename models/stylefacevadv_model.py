@@ -97,9 +97,8 @@ class StyleFaceVadvModel(BaseModel):
         # define networks (both generator and discriminator)
         with dnnlib.util.open_url(opt.network_pkl) as f:
             self.netG = legacy.load_network_pkl(f)['G_ema'].eval().to(self.gpu_ids[0])  # type: ignore
-        # self.netG = torch.nn.DataParallel(self.netG, self.gpu_ids)
 
-        lm_path = 'pretrain/wing.ckpt'
+        lm_path = 'pretrained_models/wing.ckpt'
         self.netFE_lm = lmcode_networks.FAN(fname_pretrained=lm_path).to(self.gpu_ids[0])
         self.netFE_lm_fix = lmcode_networks.FAN(fname_pretrained=lm_path).eval().to(self.gpu_ids[0])
         self.netFE_pose = diy_networks._resposenet(num_point=opt.num_point).to(self.gpu_ids[0])
