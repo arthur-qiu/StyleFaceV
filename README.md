@@ -63,7 +63,7 @@ pretrained_models
 ### Generating Videos
 
 ```bash
-python test.py --dataroot ../data/actor_align_512_png --name stylefacev --n_frames_G 60 --epoch 35 --network_pkl=pretrained_models/network-snapshot-005000.pkl --model sample --pose_path checkpoints/ffhq_stylevpose5/latest_net_FE.pth --model_names FE,FE_pose,FE_lm --rnn_path checkpoints/ffhq_stylep5ddrnnnewalign30/100_net_G.pth --num_test=1024 --results_dir './sample_results/'
+python test.py --dataroot ../data/actor_align_512_png --name stylefacev --network_pkl=pretrained_models/network-snapshot-005000.pkl --model sample --model_names FE,FE_pose,FE_lm --rnn_path pretrained_models/motion_net.pth --n_frames_G 60 --num_test=64 --results_dir './sample_results/'
 ```
 
 ## Training
