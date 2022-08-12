@@ -80,6 +80,14 @@ python test.py --dataroot ../data/actor_align_512_png --name stylefacev \\
     --n_frames_G 60 --num_test=64 --results_dir './sample_results/'
 ```
 
+<img src="docs/results1.gif" width="92%" height="92%"/>
+
+Random Results on RAVDESS
+
+<img src="docs/results2.gif" width="92%" height="92%"/>
+
+Random Results on FFHQ
+
 ## Training
 
 ### Pre Stage
