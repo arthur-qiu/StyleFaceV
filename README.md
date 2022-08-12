@@ -90,12 +90,12 @@ Random Results on RAVDESS/FFHQ
 
 ### Pre Stage
 This stage is purely trained on image data and will help the convergence.
-```bash
-python train.py --dataroot ../data/actor_align_512_png --name stylefacev_try \\
-    --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylepre
-```
 
-You can also use pre_net.pth and pre_pose_net.pth from the folder of pretrained_models.
+```bash
+python train.py --dataroot ../data/actor_align_512_png --name stylefacev_pre \\
+    --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylepre \\
+    --pre_path pretrained_models/pre_net.pth --pose_path pretrained_models/pre_pose_net.pth
+```
 
 ### Decomposing and Recomposing Pipeline
 
