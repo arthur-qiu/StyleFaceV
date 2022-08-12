@@ -47,7 +47,7 @@ Download the processed video data via this [Google Drive](https://drive.google.c
 
 Put all the data at the path "../data".
 
-transform the video data into .png form:
+Transform the video data into .png form:
 
 ```bash
 python scripts vid2img.py
