@@ -218,6 +218,13 @@ class SampleModel(BaseModel):
             self.fake_BR2_list.append(self.fake_BR2.clamp(-1, 1))
             self.fake_AB_list.append(self.fake_AB.clamp(-1, 1))
             self.fake_B_list.append(self.fake_B.clamp(-1, 1))
+            
+    def optimize_parameters(self):
+        self.forward()                   # compute fake images: G(A)
+        # update G
+        self.optimizer_FE.zero_grad()        # set G's gradients to zero
+        self.backward_G()                   # calculate graidents for G
+        self.optimizer_FE.step()  # udpate G's weights
 
     def compute_visuals(self):
 
