@@ -239,5 +239,5 @@ class SampleModel(BaseModel):
         self.fake_vid_AB = torch.cat(self.fake_AB_list, 0)
         self.fake_vid_B = torch.cat(self.fake_B_list, 0)
 
-        self.fake_vid = torch.cat([torch.cat([self.real_vid_B, self.fake_vid_BR, self.fake_vid_BR1, self.fake_vid_BR2, self.fake_vid_B], dim = 3), torch.cat([self.real_vid_A, self.fake_vid_AR, self.fake_vid_AR1, self.fake_vid_AR2, self.fake_vid_AB], dim = 3)], dim = 2)
+        self.fake_vid = torch.cat([torch.cat([self.fake_vid_BR, self.fake_vid_BR1, self.fake_vid_BR2, self.fake_vid_B], dim = 3), torch.cat([self.fake_vid_AR, self.fake_vid_AR1, self.fake_vid_AR2, self.fake_vid_AB], dim = 3)], dim = 2)
 
