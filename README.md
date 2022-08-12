@@ -45,6 +45,14 @@ Video Data: [RAVDESS](https://zenodo.org/record/1188976)
 
 Download the processed video data via this [Google Drive](https://drive.google.com/file/d/17tMHrpvTm08ixAwnzTI9dN0BhCjmCwgV/view?usp=sharing) or process the data via this [repo](https://github.com/AliaksandrSiarohin/video-preprocessing)
 
+Put all the data at the path "../data".
+
+transform the video data into .png form:
+
+```bash
+python scripts vid2img.py
+```
+
 ## Sampling
 
 ### Pretrained Models
@@ -52,12 +60,15 @@ Download the processed video data via this [Google Drive](https://drive.google.c
 Pretrained models can be downloaded from this [Google Drive](https://drive.google.com/file/d/1VyI8_AbPwAUaZJPaPba8zxsFIWumlDen/view?usp=sharing). Unzip the file and put them under the dataset folder with the following structure:
 ```
 pretrained_models
-├── .pth
-├── .pth
-├── .pth
-├── .pth
-├── .pth
-└── .pth
+├── network-snapshot-005000.pkl  # styleGAN3 checkpoint finetuned on both RAVDNESS and unaligned FFHQ.
+├── wing.ckpt                    # Face Alignment model from https://github.com/protossw512/AdaptiveWingLoss.
+├── motion_net.pth               # trained motion sampler.
+├── pre_net.pth
+└── pre_pose_net.pth
+checkpoints/stylefacev
+├── latest_net_FE.pth            # appearance extractor + recompostion 
+├── latest_net_FE_lm.pth         # first half of pose extractor
+└── latest_net_FE_pose.pth       # second half of pose extractor
 ```
 
 ### Generating Videos
@@ -68,16 +79,26 @@ python test.py --dataroot ../data/actor_align_512_png --name stylefacev --networ
 
 ## Training
 
-### Stage 1
-
+### Pre Stage
+This stage is purely trained on image data and will help the convergence.
 ```bash
-python train.py --dataroot ../data/actor_align_512_png --name stylefacev_pre --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylepre --pose_path checkpoints/ffhq_stylevideopose/latest_net_FE.pth
+python train.py --dataroot ../data/actor_align_512_png --name stylefacev_try --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylepre
 ```
 
-### Stage 2
+You can also use pre_net.pth and pre_pose_net.pth from the folder of pretrained_models.
+
+### Decomposing and Recomposing Pipeline
 
 ```bash
-python stylevideo_train.py --dataroot ../data/actor_align_512_png --name stylefacev --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylefacevadv --pose_path checkpoints/ffhq_stylevpose5/latest_net_FE.pth --n_epochs 50 --n_epochs_decay 50 --continue_train --lr 0.0002 --lambda_L2 1 --lambda_GAN 0.01 --lambda_W 10 --lambda_B 0.1 --lambda_APP 0.01 --max_dataset_size 10000
+python train.py --dataroot ../data/actor_align_512_png --name stylefacev --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylefacevadv \\
+--pose_path checkpoints/stylefacev_pre/latest_net_FE.pth --pre_path checkpoints/stylefacev_pre/latest_net_FE.pth --n_epochs 50 --n_epochs_decay 50 --lr 0.0002
+```
+
+### Motion Sampler
+
+```bash
+python train.py --dataroot ../data/actor_align_512_png --name motion --n_frames_G 30 --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylernn \\
+--pre_path checkpoints/stylefacev/latest_net_FE.pth --pose_path checkpoints/stylefacev/latest_net_FE_pose.pth --lm_path checkpoints/stylefacev/latest_net_FE_lm.pth
 ```
 
 ## Citation
