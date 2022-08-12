@@ -89,7 +89,19 @@ Random Results on RAVDESS/FFHQ
 ## Training
 
 ### Pre Stage
+
 This stage is purely trained on image data and will help the convergence.
+
+```bash
+python train.py --dataroot ../data/actor_align_512_png --name stylepose \\
+    --network_pkl=https://api.ngc.nvidia.com/v2/models/nvidia/research/stylegan3/versions/1/files/stylegan3-r-ffhqu-256x256.pkl \\
+    --model stylevpose --n_epochs 5 --n_epochs_decay 5
+python train.py --dataroot ../data/actor_align_512_png --name stylefacev_pre \\
+    --network_pkl=pretrained_models/network-snapshot-005000.pkl \\
+    --model stylepre --pose_path checkpoints/stylevpose/latest_net_FE.pth
+```
+
+You can also use pre_net.pth and pre_pose_net.pth from the folder of pretrained_models.
 
 ```bash
 python train.py --dataroot ../data/actor_align_512_png --name stylefacev_pre \\
