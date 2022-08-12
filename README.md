@@ -74,7 +74,10 @@ checkpoints/stylefacev
 ### Generating Videos
 
 ```bash
-python test.py --dataroot ../data/actor_align_512_png --name stylefacev --network_pkl=pretrained_models/network-snapshot-005000.pkl --model sample --model_names FE,FE_pose,FE_lm --rnn_path pretrained_models/motion_net.pth --n_frames_G 60 --num_test=64 --results_dir './sample_results/'
+python test.py --dataroot ../data/actor_align_512_png --name stylefacev \\
+    --network_pkl=pretrained_models/network-snapshot-005000.pkl --model sample \\
+    --model_names FE,FE_pose,FE_lm --rnn_path pretrained_models/motion_net.pth \\
+    --n_frames_G 60 --num_test=64 --results_dir './sample_results/'
 ```
 
 ## Training
@@ -82,7 +85,8 @@ python test.py --dataroot ../data/actor_align_512_png --name stylefacev --networ
 ### Pre Stage
 This stage is purely trained on image data and will help the convergence.
 ```bash
-python train.py --dataroot ../data/actor_align_512_png --name stylefacev_try --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylepre
+python train.py --dataroot ../data/actor_align_512_png --name stylefacev_try \\
+--network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylepre
 ```
 
 You can also use pre_net.pth and pre_pose_net.pth from the folder of pretrained_models.
@@ -90,15 +94,22 @@ You can also use pre_net.pth and pre_pose_net.pth from the folder of pretrained_
 ### Decomposing and Recomposing Pipeline
 
 ```bash
-python train.py --dataroot ../data/actor_align_512_png --name stylefacev --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylefacevadv \\
---pose_path checkpoints/stylefacev_pre/latest_net_FE.pth --pre_path checkpoints/stylefacev_pre/latest_net_FE.pth --n_epochs 50 --n_epochs_decay 50 --lr 0.0002
+python train.py --dataroot ../data/actor_align_512_png --name stylefacev \\
+--network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylefacevadv \\
+--pose_path checkpoints/stylefacev_pre/latest_net_FE.pth \\
+--pre_path checkpoints/stylefacev_pre/latest_net_FE.pth \\
+--n_epochs 50 --n_epochs_decay 50 --lr 0.0002
 ```
 
 ### Motion Sampler
 
 ```bash
-python train.py --dataroot ../data/actor_align_512_png --name motion --n_frames_G 30 --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylernn \\
---pre_path checkpoints/stylefacev/latest_net_FE.pth --pose_path checkpoints/stylefacev/latest_net_FE_pose.pth --lm_path checkpoints/stylefacev/latest_net_FE_lm.pth
+python train.py --dataroot ../data/actor_align_512_png --name motion \\
+--network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylernn \\
+--pre_path checkpoints/stylefacev/latest_net_FE.pth \\
+--pose_path checkpoints/stylefacev/latest_net_FE_pose.pth \\
+--lm_path checkpoints/stylefacev/latest_net_FE_lm.pth \\
+--n_frames_G 30 
 ```
 
 ## Citation
