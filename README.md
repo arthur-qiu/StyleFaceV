@@ -15,6 +15,10 @@ From [MMLab@NTU](https://www.mmlab-ntu.com/index.html) affliated with S-Lab, Nan
 
 ### Generated Samples
 
+<img src="docs/results1.gif" width="92%" height="92%"/>
+
+<img src="docs/results2.gif" width="92%" height="92%"/>
+
 ## Updates
 
 - [07/2022] Paper and demo video are released.
@@ -79,12 +83,6 @@ python test.py --dataroot ../data/actor_align_512_png --name stylefacev \\
     --model_names FE,FE_pose,FE_lm --rnn_path pretrained_models/motion_net.pth \\
     --n_frames_G 60 --num_test=64 --results_dir './sample_results/'
 ```
-
-Random Results on RAVDESS/FFHQ
-
-<img src="docs/results1.gif" width="92%" height="92%"/>
-
-<img src="docs/results2.gif" width="92%" height="92%"/>
 
 ## Training
 
