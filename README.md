@@ -10,7 +10,7 @@ From [MMLab@NTU](https://www.mmlab-ntu.com/index.html) affliated with S-Lab, Nan
 
 <img src="docs/teaser.png" width="92%" height="92%"/>
 
-[**[Project Page]**]() | [**[Paper]**]() | [**[Demo Video]**]()
+[**[Project Page]**](http://haonanqiu.com/projects/StyleFaceV.html) | [**[Paper]**]() | [**[Demo Video]**]()
 
 
 ### Generated Samples
