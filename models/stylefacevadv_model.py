@@ -86,7 +86,8 @@ class StyleFaceVadvModel(BaseModel):
         """
         BaseModel.__init__(self, opt)
         # specify the training losses you want to print out. The training/test scripts will call <BaseModel.get_current_losses>
-        self.loss_names = ['G_L1', 'G_VGG', 'G_L2', 'G_L1_B', 'G_VGG_B', 'G_L2_B', 'G_APP_B', 'G_W', 'G_GAN', 'D_real', 'D_fake']
+        self.loss_names = ['G_L1', 'G_VGG', 'G_L2', 'G_L1_B', 'G_VGG_B', 'G_L2_B', 'G_W', 'G_GAN', 'D_real', 'D_fake']
+        # self.loss_names = ['G_L1', 'G_VGG', 'G_L2', 'G_L1_B', 'G_VGG_B', 'G_L2_B', 'G_APP_B', 'G_W', 'G_GAN', 'D_real', 'D_fake']
         # specify the images you want to save/display. The training/test scripts will call <BaseModel.get_current_visuals>
         self.visual_names = ['real_B', 'fake_B', 'real_B2', 'real_A_ori', 'real_A', 'real_A2', 'fake_A', 'fake_A2', 'pose_A', 'pose_B']
         # specify the models you want to save to the disk. The training/test scripts will call <BaseModel.save_networks> and <BaseModel.load_networks>
