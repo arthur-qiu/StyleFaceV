@@ -112,7 +112,7 @@ python train.py --dataroot ../data/actor_align_512_png --name stylefacev_pre \\
 ```bash
 python train.py --dataroot ../data/actor_align_512_png --name stylefacev \\
     --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylefacevadv \\
-    --pose_path checkpoints/stylefacev_pre/latest_net_FE.pth \\
+    --pose_path pretrained_models/pre_pose_net.pth \\
     --pre_path checkpoints/stylefacev_pre/latest_net_FE.pth \\
     --n_epochs 50 --n_epochs_decay 50 --lr 0.0002
 ```

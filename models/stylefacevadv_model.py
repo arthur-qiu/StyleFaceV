@@ -160,11 +160,7 @@ class StyleFaceVadvModel(BaseModel):
         self.real_z = input['B'].to(self.device)
         self.label = (torch.zeros([self.real_z.shape[0], 1]) + random.randint(0, 1)).to(self.device)
 
-    def forward_D(self):
-
-        if hasattr(self.netG.synthesis, 'input'):
-            self.netG.synthesis.input.transform.copy_(torch.from_numpy(self.m_zero))
-
+    def forward_pre(self):
         self.bs, self.vs, self.c, self.h, self.w = self.real_As_ori.shape
         self.real_As = self.real_As_ori.view(-1, self.c, self.h, self.w)
         with torch.no_grad():
@@ -185,6 +181,11 @@ class StyleFaceVadvModel(BaseModel):
                 self.real_As_lm[:, [92], ...],
                 torch.sum(self.real_As_lm[:, [90, 94], ...], dim=1, keepdim=True) / 2,
             ], 1)
+
+    def forward_D(self):
+
+        if hasattr(self.netG.synthesis, 'input'):
+            self.netG.synthesis.input.transform.copy_(torch.from_numpy(self.m_zero))
 
         self.real_As_heat = self.netFE_lm.get_heatmap(self.real_As, b_preprocess=False)
         self.real_As_pose = self.netFE_pose(self.real_As_heat, mode=1)
@@ -299,6 +300,8 @@ class StyleFaceVadvModel(BaseModel):
         self.loss_G_B.backward()
 
     def optimize_parameters(self):
+
+        self.forward_pre()
         if self.use_gan_loss:
             self.forward_D()                   # compute fake images: G(A)
             # update G
