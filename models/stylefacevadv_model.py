@@ -141,6 +141,10 @@ class StyleFaceVadvModel(BaseModel):
             with dnnlib.util.open_url(url) as f:
                 self.vgg16 = torch.jit.load(f).eval().to(self.gpu_ids[0])
 
+            self.loss_G_GAN = 0
+            self.loss_D_real = 0
+            self.loss_D_fake = 0
+
         self.m_zero = make_transform((0.0,0.0),(0.0))
         self.use_gan_loss = False
 
@@ -281,7 +285,6 @@ class StyleFaceVadvModel(BaseModel):
             self.loss_G = self.loss_G_L1 + self.loss_G_VGG + self.loss_G_L2 + self.loss_G_GAN
         else:
             # combine loss and calculate gradients
-            self.loss_G_GAN = 0
             self.loss_G = self.loss_G_L1 + self.loss_G_VGG + self.loss_G_L2
         self.loss_G.backward()
 
