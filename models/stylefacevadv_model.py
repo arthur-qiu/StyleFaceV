@@ -281,6 +281,7 @@ class StyleFaceVadvModel(BaseModel):
             self.loss_G = self.loss_G_L1 + self.loss_G_VGG + self.loss_G_L2 + self.loss_G_GAN
         else:
             # combine loss and calculate gradients
+            self.loss_G_GAN = 0
             self.loss_G = self.loss_G_L1 + self.loss_G_VGG + self.loss_G_L2
         self.loss_G.backward()
 
