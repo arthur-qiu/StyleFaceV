@@ -61,7 +61,7 @@ python scripts vid2img.py
 
 ### Pretrained Models
 
-Pretrained models can be downloaded from this [Google Drive](https://drive.google.com/file/d/1VyI8_AbPwAUaZJPaPba8zxsFIWumlDen/view?usp=sharing). Unzip the file and put them under the dataset folder with the following structure:
+Pretrained models can be downloaded from this [Google Drive](https://drive.google.com/file/d/1c_JWfDjN44XpI8OG24p3FkdEufJGsv34/view?usp=sharing). Unzip the file and put them under the dataset folder with the following structure:
 ```
 pretrained_models
 ├── network-snapshot-005000.pkl  # styleGAN3 checkpoint finetuned on both RAVDNESS and unaligned FFHQ.
