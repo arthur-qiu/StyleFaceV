@@ -10,7 +10,7 @@ From [MMLab@NTU](https://www.mmlab-ntu.com/index.html) affliated with S-Lab, Nan
 
 <img src="docs/teaser.png" width="92%" height="92%"/>
 
-[**[Project Page]**](http://haonanqiu.com/projects/StyleFaceV.html) | [**[Paper]**]() | [**[Demo Video]**]()
+[**[Project Page]**](http://haonanqiu.com/projects/StyleFaceV.html) | [**[Paper]**]() | [**[Demo Video]**](https://youtu.be/BZNLcD04-Fc)
 
 
 ### Generated Samples
@@ -33,7 +33,7 @@ cd StyleFaceV
 
 **Dependencies:**
 
-All dependencies for defining the environment are provided in `environment/text2human_env.yaml`.
+All dependencies for defining the environment are provided in `environment/stylefacev.yaml`.
 We recommend using [Anaconda](https://docs.anaconda.com/anaconda/install/) to manage the python environment:
 
 ```bash
