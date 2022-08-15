@@ -75,7 +75,6 @@ class StyleRNNModel(BaseModel):
         self.loss_names = ['G_2d', 'G_3d', 'G_mutual', 'D_real', 'D_fake', 'D_real_3d', 'D_fake_3d']
         # specify the images you want to save/display. The training/test scripts will call <BaseModel.get_current_visuals>
         self.visual_names = ['real_A0', 'fake_A0', 'real_A_final', 'fake_A_final']
-        # self.visual_names = ['real_A', 'fake_B', 'real_B', 'fake_C', 'real_C', 'fake_AB', 'fake_AC', 'fake_BA', 'fake_CA']
         # specify the models you want to save to the disk. The training/test scripts will call <BaseModel.save_networks> and <BaseModel.load_networks>
         if self.isTrain:
             self.model_names = ['G', 'D_2d', 'D_3d']

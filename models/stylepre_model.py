@@ -78,7 +78,6 @@ class StylePreModel(BaseModel):
         self.loss_names = ['G_L1', 'G_VGG', 'G_W']
         # specify the images you want to save/display. The training/test scripts will call <BaseModel.get_current_visuals>
         self.visual_names = ['real_B', 'real_A', 'fake_B']
-        # self.visual_names = ['real_A', 'fake_B', 'real_B', 'fake_C', 'real_C', 'fake_AB', 'fake_AC', 'fake_BA', 'fake_CA']
         # specify the models you want to save to the disk. The training/test scripts will call <BaseModel.save_networks> and <BaseModel.load_networks>
         if self.isTrain:
             self.model_names = ['FE']
@@ -90,15 +89,11 @@ class StylePreModel(BaseModel):
 
         lm_path = 'pretrained_models/wing.ckpt'
         self.netFE_lm = lmcode_networks.FAN(fname_pretrained=lm_path).eval().to(self.gpu_ids[0])
-        # self.netFE_lm = torch.nn.DataParallel(self.netFE_lm, self.gpu_ids)
         self.netFE_pose = diy_networks._resposenet(num_point=opt.num_point).eval().to(self.gpu_ids[0])
         if opt.pose_path != '':
-            # pose_path = 'checkpoints/ffhq_stylevideopose/latest_net_FE.pth'
             self.netFE_pose.load_state_dict(torch.load(opt.pose_path))
-        # self.netFE_pose = torch.nn.DataParallel(self.netFE_pose, self.gpu_ids)
 
         self.netFE = resnet.wide_resdisnet50_2(num_classes=512 * 16).to(self.gpu_ids[0])
-        # self.netFE = networks.init_net(self.netFE, opt.init_type, opt.init_gain, self.gpu_ids)
         if opt.pre_path != '':
             try:
                 self.netFE.load_state_dict(torch.load(opt.pre_path), strict=True)
@@ -111,22 +106,13 @@ class StylePreModel(BaseModel):
                     new_state_dict[name] = v
                 self.netFE.load_state_dict(new_state_dict, strict=True)
 
-        # self.netG = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf, opt.netG, opt.norm,
-        #                               not opt.no_dropout, opt.init_type, opt.init_gain, self.gpu_ids)
-
         if self.isTrain:
             # define loss functions
             self.criterionGAN = networks.GANLoss(opt.gan_mode).to(self.device)
             self.criterionL1 = torch.nn.L1Loss()
             # initialize optimizers; schedulers will be automatically created by function <BaseModel.setup>.
-            # self.optimizer_G = torch.optim.Adam(self.netG.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
             self.optimizer_FE = torch.optim.Adam(self.netFE.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
-            # self.optimizer_FD = torch.optim.Adam(self.netFD.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
-            # self.optimizer_D = torch.optim.Adam(self.netD.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
-            # self.optimizers.append(self.optimizer_G)
             self.optimizers.append(self.optimizer_FE)
-            # self.optimizers.append(self.optimizer_FD)
-            # self.optimizers.append(self.optimizer_D)
 
             # Load VGG16 feature detector.
             url = 'https://nvlabs-fi-cdn.nvidia.com/stylegan2-ada-pytorch/pretrained/metrics/vgg16.pt'
@@ -151,10 +137,7 @@ class StylePreModel(BaseModel):
         """Run forward pass; called by both functions <optimize_parameters> and <test>."""
         if hasattr(self.netG.synthesis, 'input'):
             self.netG.synthesis.input.transform.copy_(torch.from_numpy(self.m_zero))
-        # label = torch.zeros([self.rresneteal_z.shape[0], 0], device=self.gpu_ids[0])
 
-        # with torch.no_grad():
-            # self.netG.synthesis.input.transform.copy_(torch.from_numpy(self.m_zero))
         with torch.no_grad():
             self.real_A_w = self.netG.mapping(self.real_z, None)
             self.real_A = self.netG.synthesis(self.real_A_w, noise_mode='const').detach().clamp(-1, 1)
@@ -162,16 +145,13 @@ class StylePreModel(BaseModel):
                 self.real_A = F.interpolate(self.real_A, size=(256, 256), mode='area')
             self.real_A_heat = self.netFE_lm.get_heatmap(self.real_A, b_preprocess=False)
             self.real_A_pose = self.netFE_pose(self.real_A_heat, mode=1).detach()
-            # self.real_A_app = self.netFE(self.real_A, mode=1).detach()
-            # self.fake_A_w = self.netFE(self.real_A, mode=2).view(-1, 16, 512)
 
             m = sample_trans()
             self.netG.synthesis.input.transform.copy_(torch.from_numpy(m))
             self.real_B = self.netG.synthesis(self.real_A_w, noise_mode='const').detach().clamp(-1, 1)
             if self.real_B.shape[2] != 256:
                 self.real_B = F.interpolate(self.real_B, size=(256, 256), mode='area')
-            # self.real_B_heat = self.netFE_lm.get_heatmap(self.real_B, b_preprocess=False)
-            # self.real_B_pose = self.netFE_pose(self.real_B_heat, mode=1).detach()
+
         self.real_B_app = self.netFE(self.real_B, mode=1)
         self.fake_B_w = self.netFE(self.real_B_app, self.real_A_pose, mode=2).view(-1, 16, 512)
 
@@ -187,8 +167,6 @@ class StylePreModel(BaseModel):
         self.loss_G_L1 = 1 * self.opt.lambda_L1 * self.criterionL1(self.fake_B, self.real_A)
 
         self.loss_G_VGG = 100 * self.opt.lambda_L1 * self.criterionL1(self.vgg16(self.fake_B), self.vgg16(self.real_A))
-
-        # self.loss_G_APP = self.opt.lambda_L1 * self.criterionL1(self.real_B_app, self.real_A_app)
 
         self.loss_G_W = 100 * self.opt.lambda_L1 * self.criterionL1(self.fake_B_w[:,1:,:], self.real_A_w[:,1:,:])
 
