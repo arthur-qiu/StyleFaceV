@@ -3,14 +3,14 @@
 This repository provides the official PyTorch implementation for the following paper:
 
 **StyleFaceV: Face Video Generation via Decomposing and Recomposing Pretrained StyleGAN3**</br>
-[Haonan Qiu](http://haonanqiu.com/), [Yuming Jiang](https://yumingj.github.io/), [Hang Zhou](https://hangz-nju-cuhk.github.io/), [Wayne Wu](https://dblp.org/pid/50/8731.html), and [Ziwei Liu](https://liuziwei7.github.io/)</br>
+[Haonan Qiu](http://haonanqiu.com/), [Yuming Jiang](https://yumingj.github.io/), [Hang Zhou](https://hangz-nju-cuhk.github.io/), [Wayne Wu](https://wywu.github.io/), and [Ziwei Liu](https://liuziwei7.github.io/)</br>
 Arxiv, 2022.
 
 From [MMLab@NTU](https://www.mmlab-ntu.com/index.html) affliated with S-Lab, Nanyang Technological University and SenseTime Research.
 
 <img src="docs/teaser.png" width="92%" height="92%"/>
 
-[**[Project Page]**](http://haonanqiu.com/projects/StyleFaceV.html) | [**[Paper]**]() | [**[Demo Video]**](https://youtu.be/BZNLcD04-Fc)
+[**[Project Page]**](http://haonanqiu.com/projects/StyleFaceV.html) | [**[Paper]**](https://arxiv.org/abs/2208.07862) | [**[Demo Video]**](https://youtu.be/BZNLcD04-Fc)
 
 
 ### Generated Samples
@@ -133,5 +133,14 @@ python train.py --dataroot ../data/actor_align_512_png --name motion \\
 If you find this work useful for your research, please consider citing our paper:
 
 ```bibtex
-
+@misc{https://doi.org/10.48550/arxiv.2208.07862,
+  doi = {10.48550/ARXIV.2208.07862},
+  url = {https://arxiv.org/abs/2208.07862},
+  author = {Qiu, Haonan and Jiang, Yuming and Zhou, Hang and Wu, Wayne and Liu, Ziwei},
+  keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  title = {StyleFaceV: Face Video Generation via Decomposing and Recomposing Pretrained StyleGAN3},
+  publisher = {arXiv},
+  year = {2022},
+  copyright = {arXiv.org perpetual, non-exclusive license}
+}
 ```
