@@ -88,11 +88,13 @@ python test.py --dataroot ../data/actor_align_512_png --name stylefacev \\
 
 ### Pre Stage
 
+If you want to use new datasets, please finetune the StyleGAN3 model first.
+
 This stage is purely trained on image data and will help the convergence.
 
 ```bash
 python train.py --dataroot ../data/actor_align_512_png --name stylepose \\
-    --network_pkl=https://api.ngc.nvidia.com/v2/models/nvidia/research/stylegan3/versions/1/files/stylegan3-r-ffhqu-256x256.pkl \\
+    --network_pkl=pretrained_models/network-snapshot-005000.pkl \\
     --model stylevpose --n_epochs 5 --n_epochs_decay 5
 python train.py --dataroot ../data/actor_align_512_png --name stylefacev_pre \\
     --network_pkl=pretrained_models/network-snapshot-005000.pkl \\
