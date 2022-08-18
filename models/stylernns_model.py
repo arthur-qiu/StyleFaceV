@@ -150,7 +150,7 @@ class StyleRNNSModel(BaseModel):
         self.real_A0 = self.real_v[:, 0]
         self.fake_A0 = x_fake[:, 0]
         self.real_A_final = self.real_v[:, -1]
-        self.fake_A_final = self.x_fake[:, -1]
+        self.fake_A_final = x_fake[:, -1]
         self.real_A0 = (self.real_A0 - torch.min(self.real_A0)) / (
                     torch.max(self.real_A0) - torch.min(self.real_A0)) * 2 - 1
         self.fake_A0 = (self.fake_A0 - torch.min(self.fake_A0)) / (
