@@ -8,6 +8,7 @@ It first creates model, dataset, and visualizer given the option.
 It then does standard network training. During the training, it also visualize/save the images, print/save the loss plot, and save models.
 The script supports continue/resume training. Use '--continue_train' to resume your previous training.
 
+"""
 import time
 from options.train_options import TrainOptions
 from data import create_dataset

@@ -6,6 +6,7 @@ It will load a saved model from '--checkpoints_dir' and save the results to '--r
 It first creates model and dataset given the option. It will hard-code some parameters.
 It then runs inference for '--num_test' images and save results to an HTML file.
 
+"""
 import os
 from options.test_options import TestOptions
 from data import create_dataset
