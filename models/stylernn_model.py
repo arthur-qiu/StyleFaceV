@@ -94,7 +94,7 @@ class StyleRNNModel(BaseModel):
 
         self.netFE = resnet.wide_resdisnet50_2(num_classes=512 * 16).to(self.gpu_ids[0])
 
-        lm_path = 'pretrain/wing.ckpt'
+        lm_path = 'pretrained_models/wing.ckpt'
         self.netFE_lm = lmcode_networks.FAN(fname_pretrained=lm_path).eval().to(self.gpu_ids[0])
         self.netFE_pose = diy_networks._resposenet(num_point=opt.num_point).eval().to(self.gpu_ids[0])
 
