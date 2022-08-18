@@ -130,7 +130,7 @@ python train.py --dataroot ../data/actor_align_512_png --name motion \\
     --n_frames_G 30 
 ```
 
-If you do not have a 32G GPU, reduce the n_frames_G (12 for 16G). Or only add supervision on pose representations:
+If you do not have a 32G GPU, reduce the n\_frames\_G (12 for 16G). Or only add supervision on pose representations:
 
 ```bash
 python train.py --dataroot ../data/actor_align_512_png --name motion \\
