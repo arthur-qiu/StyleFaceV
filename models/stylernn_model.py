@@ -141,8 +141,6 @@ class StyleRNNModel(BaseModel):
         self.real_v = torch.cat(real_v_list, 1).detach()
 
         self.image_paths = input['A_paths']
-        self.real_z = input['B'].to(self.device)
-        self.real_z = self.real_z.float()
 
     def forward(self):
         """Run forward pass; called by both functions <optimize_parameters> and <test>."""

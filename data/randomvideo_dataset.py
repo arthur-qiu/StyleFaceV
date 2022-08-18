@@ -41,8 +41,8 @@ class RandomVideoDataset(BaseDataset):
         A_frames = sorted(os.listdir(A_video))
         max_frames = len(A_frames)
         while max_frames < 60:
-            index = (index + 1) % len(self.A_paths)
-            A_video = self.A_paths[index]
+            A_index = (index + 1) % len(self.A_paths)
+            A_video = self.A_paths[A_index]
             A_frames = sorted(os.listdir(A_video))
             max_frames = len(A_frames)
 
@@ -61,9 +61,7 @@ class RandomVideoDataset(BaseDataset):
 
         A = torch.cat(A_list, 0)
 
-        B = torch.from_numpy(np.random.RandomState(index).randn(64))
-
-        return {'A': A, 'A_paths': A_path, 'B': B}
+        return {'A': A, 'A_paths': A_path}
 
     def __len__(self):
         """Return the total number of images in the dataset."""
