@@ -59,7 +59,7 @@ class StyleRNNModel(BaseModel):
         parser.add_argument('--pre_path', type=str, default='', help='path for pretrain')
         parser.add_argument('--pre_G', type=str, default='', help='path for pretrain')
         if is_train:
-            parser.set_defaults(pool_size=0, gan_mode='vanilla')
+            parser.set_defaults(pool_size=0, gan_mode='vanilla', no_flip=True)
             parser.add_argument('--lambda_L1', type=float, default=1.0, help='weight for L1 loss')
 
         return parser
