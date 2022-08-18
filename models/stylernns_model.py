@@ -13,9 +13,8 @@ import random
 import os
 
 from . import rnn_net
-from . import rnn_dnet, rnn_dnet3
+from . import rnn_dnet
 from . import rnn_losses
-
 
 def flip_video(x):
     num = random.randint(0, 1)
@@ -24,7 +23,7 @@ def flip_video(x):
     else:
         return x
 
-class StyleRNNModel(BaseModel):
+class StyleRNNSModel(BaseModel):
     """ This class implements the pix2pix model, for learning a mapping from input images to output images given paired data.
 
     The model training requires '--dataset_mode aligned' dataset.
@@ -56,8 +55,6 @@ class StyleRNNModel(BaseModel):
         parser.add_argument('--n_frames_G', type=int, default=30)
         parser.add_argument('--w_residual', type=float, default=0.2)
         parser.add_argument('--num_point', type=int, default=14)
-        parser.add_argument('--pre_path', type=str, default='', help='path for pretrain')
-        parser.add_argument('--pre_G', type=str, default='', help='path for pretrain')
         if is_train:
             parser.set_defaults(pool_size=0, gan_mode='vanilla')
             parser.add_argument('--lambda_L1', type=float, default=1.0, help='weight for L1 loss')
@@ -81,32 +78,24 @@ class StyleRNNModel(BaseModel):
         else:  # during test time, only load G
             self.model_names = ['G']
 
-        with dnnlib.util.open_url(opt.network_pkl) as f:
-            self.netSG = legacy.load_network_pkl(f)['G_ema'].eval().to(self.gpu_ids[0])  # type: ignore
-
         self.netG = rnn_net.RNNModule(w_residual = opt.w_residual).to(self.gpu_ids[0])
         # self.netG.init_optim(lr=0.0001, beta1=0.5, beta2=0.999)
         self.n_frames_G = opt.n_frames_G
         self.style_gan_size = 8
 
-        self.netFE = resnet.wide_resdisnet50_2(num_classes=512 * 16).to(self.gpu_ids[0])
-
         lm_path = 'pretrained_models/wing.ckpt'
         self.netFE_lm = lmcode_networks.FAN(fname_pretrained=lm_path).eval().to(self.gpu_ids[0])
         self.netFE_pose = diy_networks._resposenet(num_point=opt.num_point).eval().to(self.gpu_ids[0])
 
-        if opt.pre_path != '':
-            self.netFE.load_state_dict(torch.load(opt.pre_path))
         if opt.lm_path != '':
             self.netFE_lm.load_state_dict(torch.load(opt.lm_path))
         if opt.pose_path != '':
             self.netFE_pose.load_state_dict(torch.load(opt.pose_path))
-        if opt.pre_G != '':
-            self.netG.load_state_dict(torch.load(opt.pre_G))
+
 
         if self.isTrain:
-            self.netD_2d = rnn_dnet.ModelD_img(nc=6).to(self.gpu_ids[0])
-            self.netD_3d = rnn_dnet3.ModelD_3d(n_frames_G=self.n_frames_G).to(self.gpu_ids[0])
+            self.netD_2d = rnn_dnet.ModelD_img().to(self.gpu_ids[0])
+            self.netD_3d = rnn_dnet.ModelD_3d(n_frames_G=self.n_frames_G).to(self.gpu_ids[0])
             # define loss functions
             self.criterionGAN = rnn_losses.Relativistic_Average_LSGAN().to(self.device)
             # initialize optimizers; schedulers will be automatically created by function <BaseModel.setup>.
@@ -126,11 +115,9 @@ class StyleRNNModel(BaseModel):
 
         The option 'direction' can be used to swap images in domain A and domain B.
         """
-
         real_v_list = []
         self.real_A = input['A'].to(self.device)
         start_index = random.randint(0, self.real_A.shape[1] - self.n_frames_G)
-        self.real_As = self.real_A[:, start_index:start_index + self.n_frames_G, ...].clone()
         with torch.no_grad():
             for i in range(start_index, start_index + self.n_frames_G):
                 real_v_list.append(self.netFE_pose(self.netFE_lm.get_heatmap(self.real_A[:,i,...], b_preprocess=False), mode = 1).unsqueeze(1))
@@ -142,35 +129,28 @@ class StyleRNNModel(BaseModel):
     def forward(self):
         """Run forward pass; called by both functions <optimize_parameters> and <test>."""
 
-        self.real_As_pose, self.rand_in, self.rand_rec = self.netG(self.real_v[:, 0].view(self.opt.batch_size, self.style_gan_size * self.style_gan_size), self.n_frames_G)
-        self.real_As_pose = self.real_As_pose.view(-1, 1, 8, 8)
-
-
-        if self.opt.batch_size > 1:
-            self.real_As_app = self.netFE(self.real_As[:,0,...], mode=1).unsqueeze(1).repeat(1, self.n_frames_G, 1, 1, 1).view(-1, self.c, self.h, self.w)
-        else:
-            self.real_As_app = self.netFE(self.real_As[:,0,...], mode=1).repeat(self.n_frames_G, 1, 1, 1)
-        self.fake_As_w = self.netFE(self.real_As_app.detach(), self.real_As_pose, mode=2).view(-1, 16, 512)
-        self.fake_As = self.netSG.synthesis(self.fake_As_w, noise_mode='const').view(self.opt.batch_size, self.n_frames_G, 3, 256, 256)  # G(A)
+        x_fake, self.rand_in, self.rand_rec = self.netG(self.real_v[:, 0].view(self.opt.batch_size, self.style_gan_size * self.style_gan_size), self.n_frames_G)
+        x_fake = x_fake.view(self.opt.batch_size, self.n_frames_G, 1, self.style_gan_size,
+                             self.style_gan_size)
 
         frame_id = random.randint(1, self.n_frames_G - 1)
-        self.D_fake = self.netD_2d(torch.cat((self.fake_As[:, 0], self.fake_As[:, frame_id]), dim=1))
-        self.D_real = self.netD_2d(torch.cat((self.real_As[:, 0], self.real_As[:, frame_id]), dim=1).detach())
+        self.D_fake = self.netD_2d(torch.cat((x_fake[:, 0], x_fake[:, frame_id]), dim=1))
+        self.D_real = self.netD_2d(torch.cat((self.real_v[:, 0], self.real_v[:, frame_id]), dim=1).detach())
 
-        self.x_in = torch.cat((self.real_As[:, 0].unsqueeze(1).repeat(1, self.n_frames_G - 1, 1, 1,
-                                                      1), self.real_As[:, 1:]), dim=2)
+        x_in = torch.cat((self.real_v[:, 0].unsqueeze(1).repeat(1, self.n_frames_G - 1, 1, 1,
+                                                      1), self.real_v[:, 1:]), dim=2)
 
-        self.x_fake_in = torch.cat((self.fake_As[:, 0].unsqueeze(1).repeat(
-            1, self.n_frames_G - 1, 1, 1, 1), self.fake_As[:, 1:]),
+        x_fake_in = torch.cat((x_fake[:, 0].unsqueeze(1).repeat(
+            1, self.n_frames_G - 1, 1, 1, 1), x_fake[:, 1:]),
             dim=2)
 
-        self.D_real_3d = self.netD_3d(flip_video(torch.transpose(self.x_in, 1, 2)))
-        self.D_fake_3d = self.netD_3d(flip_video(torch.transpose(self.x_fake_in, 1, 2)))
+        self.D_real_3d = self.netD_3d(flip_video(torch.transpose(x_in, 1, 2)))
+        self.D_fake_3d = self.netD_3d(flip_video(torch.transpose(x_fake_in, 1, 2)))
 
-        self.real_A0 = self.real_As[:, 0]
-        self.fake_A0 = self.fake_As[:, 0]
-        self.real_A_final = self.real_As[:, -1]
-        self.fake_A_final = self.fake_As[:, -1]
+        self.real_A0 = self.real_v[:, 0]
+        self.fake_A0 = x_fake[:, 0]
+        self.real_A_final = self.real_v[:, -1]
+        self.fake_A_final = self.x_fake[:, -1]
         self.real_A0 = (self.real_A0 - torch.min(self.real_A0)) / (
                     torch.max(self.real_A0) - torch.min(self.real_A0)) * 2 - 1
         self.fake_A0 = (self.fake_A0 - torch.min(self.fake_A0)) / (
@@ -197,30 +177,25 @@ class StyleRNNModel(BaseModel):
 
     def forward_D(self):
 
-        self.real_As_pose, self.rand_in, self.rand_rec = self.netG(
-            self.real_v[:, 0].view(self.opt.batch_size, self.style_gan_size * self.style_gan_size), self.n_frames_G)
-        self.real_As_pose = self.real_As_pose.view(-1, 1, self.style_gan_size, self.style_gan_size)
-
-        if self.opt.batch_size > 1:
-            self.real_As_app = self.netFE(self.real_As[:,0,...], mode=1).unsqueeze(1).repeat(1, self.n_frames_G, 1, 1, 1).view(-1, self.c, self.h, self.w)
-        else:
-            self.real_As_app = self.netFE(self.real_As[:,0,...], mode=1).repeat(self.n_frames_G, 1, 1, 1)
-        self.fake_As_w = self.netFE(self.real_As_app.detach(), self.real_As_pose, mode=2).view(-1, 16, 512)
-        self.fake_As = self.netSG.synthesis(self.fake_As_w, noise_mode='const').view(self.opt.batch_size, self.n_frames_G, 3, 256, 256)  # G(A)
+        x_fake, _, _ = self.netG(self.real_v[:, 0].view(self.opt.batch_size, self.style_gan_size * self.style_gan_size), self.n_frames_G)
+        x_fake = x_fake.view(self.opt.batch_size, self.n_frames_G, 1,
+                             self.style_gan_size, self.style_gan_size)
 
         frame_id = random.randint(1, self.n_frames_G - 1)
-        self.D_fake = self.netD_2d(torch.cat((self.fake_As[:, 0], self.fake_As[:, frame_id]), dim=1).detach())
-        self.D_real = self.netD_2d(torch.cat((self.real_As[:, 0], self.real_As[:, frame_id]), dim=1).detach())
+        self.D_real = self.netD_2d(torch.cat((self.real_v[:, 0], self.real_v[:, frame_id]), dim=1).detach())
+        self.D_fake = self.netD_2d(
+            torch.cat((x_fake[:, 0], x_fake[:, frame_id]), dim=1).detach())
 
-        self.x_in = torch.cat((self.real_As[:, 0].unsqueeze(1).repeat(1, self.n_frames_G - 1, 1, 1,
-                                                      1), self.real_As[:, 1:]), dim=2)
-
-        self.x_fake_in = torch.cat((self.fake_As[:, 0].unsqueeze(1).repeat(
-            1, self.n_frames_G - 1, 1, 1, 1), self.fake_As[:, 1:]),
+        self.x_in = torch.cat((self.real_v[:, 0].unsqueeze(1).repeat(1, self.n_frames_G - 1, 1, 1,
+                                                      1), self.real_v[:, 1:]),
+                         dim=2)
+        self.x_fake_in = torch.cat((x_fake[:, 0].unsqueeze(1).repeat(
+            1, self.n_frames_G - 1, 1, 1, 1), x_fake[:, 1:]),
             dim=2)
 
+        self.D_fake_3d = self.netD_3d(flip_video(
+            torch.transpose(self.x_fake_in, 1, 2).detach()))
         self.D_real_3d = self.netD_3d(flip_video(torch.transpose(self.x_in, 1, 2)))
-        self.D_fake_3d = self.netD_3d(flip_video(torch.transpose(self.x_fake_in.detach(), 1, 2)))
 
     def backward_D(self):
 

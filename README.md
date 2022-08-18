@@ -130,6 +130,8 @@ python train.py --dataroot ../data/actor_align_512_png --name motion \\
     --n_frames_G 30 
 ```
 
+If you do not have a 32G GPU, reduce the n_frames_G (12 for 16G).
+
 ## Citation
 
 If you find this work useful for your research, please consider citing our paper:
