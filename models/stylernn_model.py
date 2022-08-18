@@ -55,7 +55,7 @@ class StyleRNNModel(BaseModel):
         parser.add_argument('--lm_path', type=str, default='', help='path for lm net')
         parser.add_argument('--n_frames_G', type=int, default=30)
         parser.add_argument('--w_residual', type=float, default=0.2)
-        parser.add_argument('--num_point', type=int, default=12)
+        parser.add_argument('--num_point', type=int, default=14)
         parser.add_argument('--pre_path', type=str, default='', help='path for pretrain')
         parser.add_argument('--pre_G', type=str, default='', help='path for pretrain')
         if is_train:
