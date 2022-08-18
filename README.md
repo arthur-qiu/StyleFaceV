@@ -101,7 +101,7 @@ python train.py --dataroot ../data/actor_align_512_png --name stylefacev_pre \\
     --model stylepre --pose_path checkpoints/stylevpose/latest_net_FE.pth
 ```
 
-You can also use pre_net.pth and pre_pose_net.pth from the folder of pretrained_models.
+You can also use pre\_net.pth and pre\_pose\_net.pth from the folder of pretrained_models.
 
 ```bash
 python train.py --dataroot ../data/actor_align_512_png --name stylefacev_pre \\
