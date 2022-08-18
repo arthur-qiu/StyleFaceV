@@ -67,7 +67,7 @@ class StyleFaceVadvModel(BaseModel):
         parser.add_argument('--num_point', type=int, default=14)
         parser.add_argument('--pre_path', type=str, default='', help='path for pretrain')
         if is_train:
-            parser.set_defaults(pool_size=0, gan_mode='vanilla', epoch_gan = 20)
+            parser.set_defaults(pool_size=0, gan_mode='vanilla', epoch_gan = 20, no_flip=True)
             parser.add_argument('--lambda_VGG', type=float, default=100.0, help='weight for VGG loss')
             parser.add_argument('--lambda_L1', type=float, default=10.0, help='weight for L1 loss')
             parser.add_argument('--lambda_L2', type=float, default=1.0, help='weight for L2 loss')
