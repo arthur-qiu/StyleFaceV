@@ -49,12 +49,12 @@ Video Data: [RAVDESS](https://zenodo.org/record/1188976)
 
 Download the processed video data via this [Google Drive](https://drive.google.com/file/d/17tMHrpvTm08ixAwnzTI9dN0BhCjmCwgV/view?usp=sharing) or process the data via this [repo](https://github.com/AliaksandrSiarohin/video-preprocessing)
 
-Put all the data at the path "../data".
+Put all the data at the path `../data`.
 
-Transform the video data into .png form:
+Transform the video data into `.png` form:
 
 ```bash
-python scripts vid2img.py
+python scripts/vid2img.py
 ```
 
 ## Sampling
@@ -101,7 +101,7 @@ python train.py --dataroot ../data/actor_align_512_png --name stylefacev_pre \\
     --model stylepre --pose_path checkpoints/stylevpose/latest_net_FE.pth
 ```
 
-You can also use pre\_net.pth and pre\_pose\_net.pth from the folder of pretrained_models.
+You can also use `pre_net.pth` and `pre_pose_net.pth` from the folder of `pretrained_models`.
 
 ```bash
 python train.py --dataroot ../data/actor_align_512_png --name stylefacev_pre \\
@@ -130,7 +130,7 @@ python train.py --dataroot ../data/actor_align_512_png --name motion \\
     --n_frames_G 30 
 ```
 
-If you do not have a 32G GPU, reduce the n\_frames\_G (12 for 16G). Or only add supervision on pose representations:
+If you do not have a 32G GPU, reduce the `n_frames_G` (12 for 16G). Or only add supervision on pose representations:
 
 ```bash
 python train.py --dataroot ../data/actor_align_512_png --name motion \\
