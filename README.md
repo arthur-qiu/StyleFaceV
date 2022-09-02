@@ -78,9 +78,9 @@ checkpoints/stylefacev
 ### Generating Videos
 
 ```bash
-python test.py --dataroot ../data/actor_align_512_png --name stylefacev \\
-    --network_pkl=pretrained_models/network-snapshot-005000.pkl --model sample \\
-    --model_names FE,FE_pose,FE_lm --rnn_path pretrained_models/motion_net.pth \\
+python test.py --dataroot ../data/actor_align_512_png --name stylefacev \
+    --network_pkl=pretrained_models/network-snapshot-005000.pkl --model sample \
+    --model_names FE,FE_pose,FE_lm --rnn_path pretrained_models/motion_net.pth \
     --n_frames_G 60 --num_test=64 --results_dir './sample_results/'
 ```
 
@@ -93,50 +93,50 @@ If you want to use new datasets, please finetune the StyleGAN3 model first.
 This stage is purely trained on image data and will help the convergence.
 
 ```bash
-python train.py --dataroot ../data/actor_align_512_png --name stylepose \\
-    --network_pkl=pretrained_models/network-snapshot-005000.pkl \\
+python train.py --dataroot ../data/actor_align_512_png --name stylepose \
+    --network_pkl=pretrained_models/network-snapshot-005000.pkl \
     --model stylevpose --n_epochs 5 --n_epochs_decay 5
-python train.py --dataroot ../data/actor_align_512_png --name stylefacev_pre \\
-    --network_pkl=pretrained_models/network-snapshot-005000.pkl \\
+python train.py --dataroot ../data/actor_align_512_png --name stylefacev_pre \
+    --network_pkl=pretrained_models/network-snapshot-005000.pkl \
     --model stylepre --pose_path checkpoints/stylevpose/latest_net_FE.pth
 ```
 
 You can also use `pre_net.pth` and `pre_pose_net.pth` from the folder of `pretrained_models`.
 
 ```bash
-python train.py --dataroot ../data/actor_align_512_png --name stylefacev_pre \\
-    --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylepre \\
+python train.py --dataroot ../data/actor_align_512_png --name stylefacev_pre \
+    --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylepre \
     --pre_path pretrained_models/pre_net.pth --pose_path pretrained_models/pre_pose_net.pth
 ```
 
 ### Decomposing and Recomposing Pipeline
 
 ```bash
-python train.py --dataroot ../data/actor_align_512_png --name stylefacev \\
-    --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylefacevadv \\
-    --pose_path pretrained_models/pre_pose_net.pth \\
-    --pre_path checkpoints/stylefacev_pre/latest_net_FE.pth \\
+python train.py --dataroot ../data/actor_align_512_png --name stylefacev \
+    --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylefacevadv \
+    --pose_path pretrained_models/pre_pose_net.pth \
+    --pre_path checkpoints/stylefacev_pre/latest_net_FE.pth \
     --n_epochs 50 --n_epochs_decay 50 --lr 0.0002
 ```
 
 ### Motion Sampler
 
 ```bash
-python train.py --dataroot ../data/actor_align_512_png --name motion \\
-    --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylernn \\
-    --pre_path checkpoints/stylefacev/latest_net_FE.pth \\
-    --pose_path checkpoints/stylefacev/latest_net_FE_pose.pth \\
-    --lm_path checkpoints/stylefacev/latest_net_FE_lm.pth \\
+python train.py --dataroot ../data/actor_align_512_png --name motion \
+    --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylernn \
+    --pre_path checkpoints/stylefacev/latest_net_FE.pth \
+    --pose_path checkpoints/stylefacev/latest_net_FE_pose.pth \
+    --lm_path checkpoints/stylefacev/latest_net_FE_lm.pth \
     --n_frames_G 30 
 ```
 
 If you do not have a 32G GPU, reduce the `n_frames_G` (12 for 16G). Or only add supervision on pose representations:
 
 ```bash
-python train.py --dataroot ../data/actor_align_512_png --name motion \\
-    --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylernns \\
-    --pose_path checkpoints/stylefacev/latest_net_FE_pose.pth \\
-    --lm_path checkpoints/stylefacev/latest_net_FE_lm.pth \\
+python train.py --dataroot ../data/actor_align_512_png --name motion \
+    --network_pkl=pretrained_models/network-snapshot-005000.pkl --model stylernns \
+    --pose_path checkpoints/stylefacev/latest_net_FE_pose.pth \
+    --lm_path checkpoints/stylefacev/latest_net_FE_lm.pth \
     --n_frames_G 30 
 ```
 

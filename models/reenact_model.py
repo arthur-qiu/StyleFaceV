@@ -194,7 +194,7 @@ class ReenactModel(BaseModel):
             self.fake_BR_list.append(self.fake_BR.clamp(-1, 1))
             self.real_A_list.append(self.real_A.clamp(-1, 1))
             self.fake_A_list.append(self.fake_A.clamp(-1, 1))
-            
+
     def optimize_parameters(self):
         self.forward()                   # compute fake images: G(A)
         # update G
@@ -222,5 +222,5 @@ class ReenactModel(BaseModel):
         self.real_vid_A = torch.cat(self.real_A_list, 0)
         self.fake_vid_A = torch.cat(self.fake_A_list, 0)
 
-        self.fake_vid = torch.cat([torch.cat([self.real_vid_B, self.fake_vid_B, self.fake_vid_BA, self.fake_vid_BR], dim = 3), torch.cat([self.real_vid_A, self.fake_vid_A, self.fake_vid_AB, self.fake_vid_AR], dim = 3)], dim = 2)
+        self.fake_vid = torch.cat([torch.cat([self.real_vid_B, self.fake_vid_BA, self.fake_vid_B, self.fake_vid_BR], dim = 3), torch.cat([self.real_vid_A, self.fake_vid_A, self.fake_vid_AB, self.fake_vid_AR], dim = 3)], dim = 2)
 
