@@ -6,7 +6,7 @@ This repository provides the official PyTorch implementation for the following p
 [Haonan Qiu](http://haonanqiu.com/), [Yuming Jiang](https://yumingj.github.io/), [Hang Zhou](https://hangz-nju-cuhk.github.io/), [Wayne Wu](https://wywu.github.io/), and [Ziwei Liu](https://liuziwei7.github.io/)</br>
 Arxiv, 2022.
 
-From [MMLab@NTU](https://www.mmlab-ntu.com/index.html) affliated with S-Lab, Nanyang Technological University and SenseTime Research.
+From [MMLab@NTU](https://www.mmlab-ntu.com/index.html) affiliated with S-Lab, Nanyang Technological University and SenseTime Research.
 
 <img src="docs/teaser.png" width="92%" height="92%"/>
 
